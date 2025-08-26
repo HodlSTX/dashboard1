@@ -115,7 +115,7 @@ export function BountyAnalyticsSection() {
           iconBg="bg-green-500/20"
         />
         <MetricCard
-          title="In Progress"
+          title="Active (Open)"
           value={bountyStats.active}
           icon={<Clock className="text-yellow-400 text-2xl" />}
           iconBg="bg-yellow-500/20"

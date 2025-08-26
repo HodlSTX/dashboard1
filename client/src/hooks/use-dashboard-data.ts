@@ -113,9 +113,9 @@ async function fetchUsers(): Promise<User[]> {
     throw new Error("Failed to fetch users");
   }
   const result = await response.json();
-  // Handle the API response structure
-  if (result.data && Array.isArray(result.data)) {
-    return result.data.map((user: any) => ({
+  // Handle the API response structure - users API returns { users: [...] }
+  if (result.users && Array.isArray(result.users)) {
+    return result.users.map((user: any) => ({
       id: user.id || user._id || "",
       username: user.username || user.name || "",
       stxAddress: user.stxAddress || user.stx_address || "",

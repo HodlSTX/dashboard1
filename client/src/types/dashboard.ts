@@ -30,7 +30,7 @@ export interface Bounty {
   category: string;
   organization: string;
   value: string;
-  status: 'active' | 'completed' | 'disputed' | 'draft';
+  status: string; // API returns 'Open', 'MINED', etc.
   dueDate: string;
   createdAt: string;
 }

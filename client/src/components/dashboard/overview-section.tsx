@@ -1,7 +1,7 @@
 import { MetricCard } from "./metric-card";
 import { ActivityChart } from "./activity-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Trophy, Briefcase, DollarSign } from "lucide-react";
+import { Users, Trophy, Briefcase, DollarSign, CheckCircle } from "lucide-react";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { useEffect, useRef } from "react";
 
@@ -84,38 +84,31 @@ export function OverviewSection() {
         <MetricCard
           title="Total Users"
           value={data.userStats?.totalUsers ?? "Loading..."}
-          change="+12.5%"
-          changeType="positive"
           icon={<Users className="text-za-purple text-xl" />}
           iconBg="bg-za-purple/20"
         />
         <MetricCard
           title="Active Bounties"
-          value={Array.isArray(data.bounties) ? data.bounties.filter(b => b.status === 'active').length : "Loading..."}
-          change="+8.2%"
-          changeType="positive"
+          value={Array.isArray(data.bounties) ? data.bounties.filter(b => b.status === 'Open').length : "Loading..."}
           icon={<Trophy className="text-za-cyan text-xl" />}
           iconBg="bg-za-cyan/20"
         />
         <MetricCard
+          title="Completed Bounties"
+          value={Array.isArray(data.bounties) ? data.bounties.filter(b => b.status === 'MINED').length : "Loading..."}
+          icon={<CheckCircle className="text-green-400 text-xl" />}
+          iconBg="bg-green-500/20"
+        />
+        <MetricCard
           title="Total Gigs"
           value={data.gigStats?.totalGigs ?? "Loading..."}
-          change="+15.7%"
-          changeType="positive"
           icon={<Briefcase className="text-purple-400 text-xl" />}
           iconBg="bg-purple-500/20"
         />
-        <MetricCard
-          title="Total Value"
-          value={data.gigStats?.totalValue ?? "Loading..."}
-          change="+23.1%"
-          changeType="positive"
-          icon={<DollarSign className="text-green-400 text-xl" />}
-          iconBg="bg-green-500/20"
-        />
       </div>
 
-      {/* Charts Section */}
+      {/* Charts Section - Commented out until we have proper data */}
+      {/*
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivityChart
           title="User Activity"
@@ -123,7 +116,6 @@ export function OverviewSection() {
           labels={[]}
         />
 
-        {/* Bounty Distribution Chart */}
         <Card className="bg-za-card border-za-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="text-lg font-semibold" data-testid="bounty-distribution-title">
@@ -141,6 +133,7 @@ export function OverviewSection() {
           </CardContent>
         </Card>
       </div>
+      */}
     </section>
   );
 }
