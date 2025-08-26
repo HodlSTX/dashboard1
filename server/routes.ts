@@ -58,11 +58,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/proxy/bounties", async (req, res) => {
     try {
-      const response = await fetch("https://zeroauthoritydao.com/api/bounties");
+      // Try to get more bounties by using limit parameter
+      const response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      
+      // If we get exactly 100 records, try to fetch more with pagination
+      if (data.data && data.data.length === 100) {
+        console.log("Got 100 bounties, attempting to fetch more with pagination...");
+        try {
+          // Fetch page 2
+          const page2Response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100&page=2");
+          if (page2Response.ok) {
+            const page2Data = await page2Response.json();
+            if (page2Data.data && page2Data.data.length > 0) {
+              data.data = [...data.data, ...page2Data.data];
+              console.log(`Combined data after page 2: ${data.data.length} total bounties`);
+              
+              // If page 2 also has 100 records, try page 3
+              if (page2Data.data.length === 100) {
+                try {
+                  const page3Response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100&page=3");
+                  if (page3Response.ok) {
+                    const page3Data = await page3Response.json();
+                    if (page3Data.data && page3Data.data.length > 0) {
+                      data.data = [...data.data, ...page3Data.data];
+                      console.log(`Combined data after page 3: ${data.data.length} total bounties`);
+                    }
+                  }
+                } catch (page3Error) {
+                  console.log("Page 3 fetch failed, using pages 1-2");
+                }
+              }
+            }
+          }
+        } catch (paginationError) {
+          console.log("Pagination attempt failed, using single page result");
+        }
+      }
+      
       res.json(data);
     } catch (error) {
       console.error("Error fetching bounties:", error);

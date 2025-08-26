@@ -26,7 +26,7 @@ export function BountyAnalyticsSection() {
   const bountyStats = {
     total: bounties.length,
     active: bounties.filter(b => b.status === 'Open').length,
-    completed: bounties.filter(b => b.status === 'MINED').length,
+    completed: bounties.filter(b => ['MINED', 'FAILED', 'Winner'].includes(b.status)).length,
     disputed: bounties.filter(b => b.status === 'disputed').length,
   };
 
@@ -34,6 +34,8 @@ export function BountyAnalyticsSection() {
     switch (status) {
       case 'Open': return 'bg-green-500/20 text-green-400';
       case 'MINED': return 'bg-blue-500/20 text-blue-400';
+      case 'Winner': return 'bg-purple-500/20 text-purple-400';
+      case 'FAILED': return 'bg-gray-500/20 text-gray-400';
       case 'disputed': return 'bg-red-500/20 text-red-400';
       default: return 'bg-yellow-500/20 text-yellow-400';
     }

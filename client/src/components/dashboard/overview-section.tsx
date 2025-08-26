@@ -95,7 +95,7 @@ export function OverviewSection() {
         />
         <MetricCard
           title="Completed Bounties"
-          value={Array.isArray(data.bounties) ? data.bounties.filter(b => b.status === 'MINED').length : "Loading..."}
+          value={Array.isArray(data.bounties) ? data.bounties.filter(b => ['MINED', 'FAILED', 'Winner'].includes(b.status)).length : "Loading..."}
           icon={<CheckCircle className="text-green-400 text-xl" />}
           iconBg="bg-green-500/20"
         />
