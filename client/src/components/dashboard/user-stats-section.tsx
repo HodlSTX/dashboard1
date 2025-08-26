@@ -35,12 +35,8 @@ function TopUserCard({ user, index }: TopUserProps) {
 export function UserStatsSection() {
   const { data, isLoading } = useDashboardData();
 
-  // Mock top users data - will be replaced with real API data
-  const mockTopUsers: User[] = [
-    { id: "1", username: "xyzero.btc", stxAddress: "", category: "Developer", contributionCount: 152, rating: 4.9 },
-    { id: "2", username: "Dawg Haus", stxAddress: "", category: "Designer", contributionCount: 89, rating: 4.8 },
-    { id: "3", username: "markeljan", stxAddress: "", category: "Developer", contributionCount: 76, rating: 4.7 },
-  ];
+  // Use real API data for top users
+  const topUsers = data.topUsers || [];
 
   if (isLoading) {
     return (
@@ -74,9 +70,15 @@ export function UserStatsSection() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {mockTopUsers.map((user, index) => (
-                <TopUserCard key={user.id} user={user} index={index} />
-              ))}
+              {topUsers.length > 0 ? (
+                topUsers.map((user, index) => (
+                  <TopUserCard key={user.id} user={user} index={index} />
+                ))
+              ) : (
+                <div className="text-center py-4 text-slate-400" data-testid="no-users-message">
+                  <p>No user data available</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -90,25 +92,9 @@ export function UserStatsSection() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { name: "Developers", count: 587, percentage: 75, color: "bg-za-purple" },
-                { name: "Designers", count: 321, percentage: 67, color: "bg-za-cyan" },
-                { name: "Writers", count: 198, percentage: 50, color: "bg-purple-500" },
-                { name: "General", count: 141, percentage: 33, color: "bg-green-500" },
-              ].map((category, index) => (
-                <div key={category.name} className="flex items-center justify-between" data-testid={`category-${index}`}>
-                  <span className="text-slate-300">{category.name}</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-20 bg-za-secondary rounded-full h-2">
-                      <div 
-                        className={`h-2 ${category.color} rounded-full`} 
-                        style={{ width: `${category.percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium">{category.count}</span>
-                  </div>
-                </div>
-              ))}
+              <div className="text-center py-4 text-slate-400" data-testid="no-user-categories-message">
+                <p>User category data not available via API</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -125,28 +111,37 @@ export function UserStatsSection() {
               <div data-testid="new-users-metric">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-300">New Users</span>
-                  <span className="text-green-400 text-sm">+24 this week</span>
+                  <span className="text-green-400 text-sm">{data.userStats?.newUsers || 0}</span>
                 </div>
                 <div className="w-full bg-za-secondary rounded-full h-2">
-                  <div className="w-4/5 h-2 bg-gradient-to-r from-za-purple to-za-cyan rounded-full" />
+                  <div 
+                    className="h-2 bg-gradient-to-r from-za-purple to-za-cyan rounded-full" 
+                    style={{ width: `${Math.min((data.userStats?.newUsers || 0) / 100 * 100, 100)}%` }}
+                  />
                 </div>
               </div>
               <div data-testid="retention-rate-metric">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-300">Retention Rate</span>
-                  <span className="text-za-purple font-semibold">87.3%</span>
+                  <span className="text-za-purple font-semibold">{data.userStats?.retentionRate || 0}%</span>
                 </div>
                 <div className="w-full bg-za-secondary rounded-full h-2">
-                  <div className="w-5/6 h-2 bg-za-purple rounded-full" />
+                  <div 
+                    className="h-2 bg-za-purple rounded-full" 
+                    style={{ width: `${data.userStats?.retentionRate || 0}%` }}
+                  />
                 </div>
               </div>
               <div data-testid="average-rating-metric">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-300">Avg. Rating</span>
-                  <span className="text-yellow-400 font-semibold">4.6★</span>
+                  <span className="text-yellow-400 font-semibold">{data.userStats?.averageRating || 0}★</span>
                 </div>
                 <div className="w-full bg-za-secondary rounded-full h-2">
-                  <div className="w-11/12 h-2 bg-yellow-400 rounded-full" />
+                  <div 
+                    className="h-2 bg-yellow-400 rounded-full" 
+                    style={{ width: `${(data.userStats?.averageRating || 0) / 5 * 100}%` }}
+                  />
                 </div>
               </div>
             </div>

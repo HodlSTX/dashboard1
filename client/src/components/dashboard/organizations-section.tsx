@@ -6,69 +6,29 @@ import { Building, Code, PaintbrushVertical, Pen, Megaphone } from "lucide-react
 export function OrganizationsSection() {
   const { data, isLoading } = useDashboardData();
 
-  // Mock organizations data - will be replaced with real API data
-  const mockOrganizations: Organization[] = [
-    {
-      id: "1",
-      name: "Clarity Alliance",
-      description: "Security & Auditing",
-      bountyCount: 12,
-      totalValue: "$24.5K",
-    },
-    {
-      id: "2",
-      name: "Red Block Labs",
-      description: "Development Studio",
-      bountyCount: 8,
-      totalValue: "$18.2K",
-    },
-    {
-      id: "3",
-      name: "Zero Authority",
-      description: "Platform Operations",
-      bountyCount: 15,
-      totalValue: "$32.1K",
-    },
-  ];
+  const organizations = data.organizations || [];
+  const categories = data.categories || [];
 
-  // Mock categories data - will be replaced with real API data
-  const mockCategories: (Category & { icon: React.ReactNode; color: string })[] = [
-    {
-      id: "1",
-      name: "Development",
-      description: "Smart contracts, dApps",
-      bountyCount: 42,
-      icon: <Code className="text-za-purple" />,
-      color: "bg-za-purple",
-    },
-    {
-      id: "2",
-      name: "Design",
-      description: "UI/UX, Graphics",
-      bountyCount: 28,
-      icon: <PaintbrushVertical className="text-za-cyan" />,
-      color: "bg-za-cyan",
-    },
-    {
-      id: "3",
-      name: "Writing",
-      description: "Documentation, Content",
-      bountyCount: 19,
-      icon: <Pen className="text-purple-400" />,
-      color: "bg-purple-500",
-    },
-    {
-      id: "4",
-      name: "Marketing",
-      description: "Campaigns, Social Media",
-      bountyCount: 12,
-      icon: <Megaphone className="text-green-400" />,
-      color: "bg-green-500",
-    },
-  ];
+  // Map categories with icons for display
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName.toLowerCase()) {
+      case 'development': return <Code className="text-za-purple" />;
+      case 'design': return <PaintbrushVertical className="text-za-cyan" />;
+      case 'writing': return <Pen className="text-purple-400" />;
+      case 'marketing': return <Megaphone className="text-green-400" />;
+      default: return <Code className="text-slate-400" />;
+    }
+  };
 
-  const organizations = data.organizations.length > 0 ? data.organizations : mockOrganizations;
-  const categories = data.categories.length > 0 ? data.categories : mockCategories;
+  const getCategoryColor = (categoryName: string) => {
+    switch (categoryName.toLowerCase()) {
+      case 'development': return 'bg-za-purple';
+      case 'design': return 'bg-za-cyan';
+      case 'writing': return 'bg-purple-500';
+      case 'marketing': return 'bg-green-500';
+      default: return 'bg-slate-500';
+    }
+  };
 
   const getOrgGradient = (index: number) => {
     const gradients = [
@@ -110,27 +70,33 @@ export function OrganizationsSection() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {organizations.map((org, index) => (
-                <div
-                  key={org.id}
-                  className="flex items-center justify-between p-4 bg-za-secondary/30 rounded-lg hover:bg-za-secondary/50 transition-colors"
-                  data-testid={`organization-${index}`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-12 h-12 ${getOrgGradient(index)} rounded-lg flex items-center justify-center`}>
-                      <Building className="text-white" />
+              {organizations.length > 0 ? (
+                organizations.map((org, index) => (
+                  <div
+                    key={org.id}
+                    className="flex items-center justify-between p-4 bg-za-secondary/30 rounded-lg hover:bg-za-secondary/50 transition-colors"
+                    data-testid={`organization-${index}`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-12 h-12 ${getOrgGradient(index)} rounded-lg flex items-center justify-center`}>
+                        <Building className="text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{org.name}</p>
+                        <p className="text-sm text-slate-400">{org.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{org.name}</p>
-                      <p className="text-sm text-slate-400">{org.description}</p>
+                    <div className="text-right">
+                      <p className="font-semibold">{org.bountyCount} bounties</p>
+                      <p className="text-sm text-green-400">{org.totalValue} total</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{org.bountyCount} bounties</p>
-                    <p className="text-sm text-green-400">{org.totalValue} total</p>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-slate-400" data-testid="no-organizations-message">
+                  <p>No organization data available</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -144,35 +110,41 @@ export function OrganizationsSection() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockCategories.map((category, index) => {
-                const percentage = Math.round((category.bountyCount / 100) * 80); // Mock percentage calculation
-                return (
-                  <div
-                    key={category.id}
-                    className="flex items-center justify-between"
-                    data-testid={`category-${index}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-za-purple/20 rounded-lg flex items-center justify-center">
-                        {category.icon}
+              {categories.length > 0 ? (
+                categories.map((category, index) => {
+                  const percentage = Math.min(Math.round((category.bountyCount / 50) * 100), 100);
+                  return (
+                    <div
+                      key={category.id}
+                      className="flex items-center justify-between"
+                      data-testid={`category-${index}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-za-purple/20 rounded-lg flex items-center justify-center">
+                          {getCategoryIcon(category.name)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{category.name}</p>
+                          <p className="text-sm text-slate-400">{category.description}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{category.name}</p>
-                        <p className="text-sm text-slate-400">{category.description}</p>
+                      <div className="text-right">
+                        <p className="text-za-purple font-semibold">{category.bountyCount} bounties</p>
+                        <div className="w-16 bg-za-secondary rounded-full h-1 mt-1">
+                          <div 
+                            className={`h-1 ${getCategoryColor(category.name)} rounded-full`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-za-purple font-semibold">{category.bountyCount} bounties</p>
-                      <div className="w-16 bg-za-secondary rounded-full h-1 mt-1">
-                        <div 
-                          className={`h-1 ${category.color} rounded-full`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="text-center py-4 text-slate-400" data-testid="no-categories-message">
+                  <p>No category data available</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

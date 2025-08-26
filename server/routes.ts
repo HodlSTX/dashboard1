@@ -22,6 +22,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/proxy/users", async (req, res) => {
+    try {
+      const response = await fetch("https://zeroauthoritydao.com/api/users");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ 
+        error: "Failed to fetch users",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   app.get("/api/proxy/gigs/stats", async (req, res) => {
     try {
       const response = await fetch("https://zeroauthoritydao.com/api/gigs/stats");

@@ -10,9 +10,7 @@ export function OverviewSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<any>(null);
 
-  // Mock data for demonstration - will be replaced with real API data
-  const mockUserActivity = [65, 78, 85, 92, 88, 95, 102];
-  const mockActivityLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  // Use real API data only - no mock data
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -121,8 +119,8 @@ export function OverviewSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivityChart
           title="User Activity"
-          data={mockUserActivity}
-          labels={mockActivityLabels}
+          data={[]}
+          labels={[]}
         />
 
         {/* Bounty Distribution Chart */}

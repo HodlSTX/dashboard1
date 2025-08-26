@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { DashboardData, UserStats, BountyStats, GigStats, Bounty, Category, Organization } from "@/types/dashboard";
+import { DashboardData, UserStats, BountyStats, GigStats, Bounty, Category, Organization, User } from "@/types/dashboard";
 
 const API_BASE_URL = "/api/proxy";
 
@@ -58,8 +58,8 @@ async function fetchBounties(): Promise<Bounty[]> {
       description: bounty.description || "",
       category: typeof bounty.category === 'object' ? bounty.category?.name || "" : bounty.category || "",
       organization: typeof bounty.organization === 'object' ? bounty.organization?.name || "" : bounty.organization || "",
-      value: bounty.value || bounty.price || "0",
-      status: bounty.status || "active",
+      value: bounty.value || bounty.price || bounty.reward || "0",
+      status: bounty.status || bounty.state || "Unknown",
       dueDate: bounty.dueDate || bounty.deadline || new Date().toISOString(),
       createdAt: bounty.createdAt || bounty.created_at || new Date().toISOString(),
     }));
@@ -107,6 +107,28 @@ async function fetchOrganizations(): Promise<Organization[]> {
   return [];
 }
 
+async function fetchUsers(): Promise<User[]> {
+  const response = await fetch(`${API_BASE_URL}/users`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.data && Array.isArray(result.data)) {
+    return result.data.map((user: any) => ({
+      id: user.id || user._id || "",
+      username: user.username || user.name || "",
+      stxAddress: user.stxAddress || user.stx_address || "",
+      category: user.category || user.type || "",
+      contributionCount: user.contributionCount || user.contribution_count || 0,
+      rating: user.rating || user.average_rating || 0,
+      avatar: user.avatar || user.avatarUrl || "",
+    }));
+  }
+  // Fallback to empty array
+  return [];
+}
+
 export function useUserStats() {
   return useQuery({
     queryKey: ["/api/users/stats"],
@@ -147,24 +169,38 @@ export function useOrganizations() {
   });
 }
 
+export function useUsers() {
+  return useQuery({
+    queryKey: ["/api/users"],
+    queryFn: fetchUsers,
+    refetchInterval: 5 * 60 * 1000,
+  });
+}
+
 export function useDashboardData() {
   const userStatsQuery = useUserStats();
   const gigStatsQuery = useGigStats();
   const bountiesQuery = useBounties();
   const categoriesQuery = useCategories();
   const organizationsQuery = useOrganizations();
+  const usersQuery = useUsers();
 
   const isLoading = userStatsQuery.isLoading || gigStatsQuery.isLoading || 
                    bountiesQuery.isLoading || categoriesQuery.isLoading || 
-                   organizationsQuery.isLoading;
+                   organizationsQuery.isLoading || usersQuery.isLoading;
 
   const isError = userStatsQuery.isError || gigStatsQuery.isError || 
                  bountiesQuery.isError || categoriesQuery.isError || 
-                 organizationsQuery.isError;
+                 organizationsQuery.isError || usersQuery.isError;
 
   const error = userStatsQuery.error || gigStatsQuery.error || 
                bountiesQuery.error || categoriesQuery.error || 
-               organizationsQuery.error;
+               organizationsQuery.error || usersQuery.error;
+
+  // Get top users sorted by contribution count
+  const topUsers = (usersQuery.data || [])
+    .sort((a, b) => b.contributionCount - a.contributionCount)
+    .slice(0, 5);
 
   return {
     data: {
@@ -173,6 +209,7 @@ export function useDashboardData() {
       bounties: bountiesQuery.data || [],
       categories: categoriesQuery.data || [],
       organizations: organizationsQuery.data || [],
+      topUsers,
     },
     isLoading,
     isError,
@@ -183,6 +220,7 @@ export function useDashboardData() {
       bountiesQuery.refetch();
       categoriesQuery.refetch();
       organizationsQuery.refetch();
+      usersQuery.refetch();
     },
   };
 }

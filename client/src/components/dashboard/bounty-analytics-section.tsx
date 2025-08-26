@@ -13,44 +13,7 @@ export function BountyAnalyticsSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Mock bounty data - will be replaced with real API data
-  const mockBounties: Bounty[] = [
-    {
-      id: "1",
-      title: "Smart Contract Audit",
-      description: "Comprehensive security audit for DeFi protocol",
-      category: "Development",
-      organization: "Clarity Alliance",
-      value: "$2,500",
-      status: "active",
-      dueDate: "2024-12-15",
-      createdAt: "2024-11-01",
-    },
-    {
-      id: "2",
-      title: "UI/UX Design for dApp",
-      description: "Modern interface design for Web3 application",
-      category: "Design",
-      organization: "Red Block Labs",
-      value: "$1,800",
-      status: "active",
-      dueDate: "2024-12-20",
-      createdAt: "2024-11-05",
-    },
-    {
-      id: "3",
-      title: "Technical Documentation",
-      description: "Comprehensive API documentation",
-      category: "Writing",
-      organization: "Zero Authority",
-      value: "$750",
-      status: "completed",
-      dueDate: "2024-12-10",
-      createdAt: "2024-10-15",
-    },
-  ];
-
-  const bounties = data.bounties.length > 0 ? data.bounties : mockBounties;
+  const bounties = data.bounties || [];
 
   const filteredBounties = bounties.filter((bounty) => {
     const matchesSearch = (bounty.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,15 +25,15 @@ export function BountyAnalyticsSection() {
 
   const bountyStats = {
     total: bounties.length,
-    active: bounties.filter(b => b.status === 'active').length,
-    completed: bounties.filter(b => b.status === 'completed').length,
+    active: bounties.filter(b => b.status === 'Open').length,
+    completed: bounties.filter(b => b.status === 'MINED').length,
     disputed: bounties.filter(b => b.status === 'disputed').length,
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500/20 text-green-400';
-      case 'completed': return 'bg-blue-500/20 text-blue-400';
+      case 'Open': return 'bg-green-500/20 text-green-400';
+      case 'MINED': return 'bg-blue-500/20 text-blue-400';
       case 'disputed': return 'bg-red-500/20 text-red-400';
       default: return 'bg-yellow-500/20 text-yellow-400';
     }
