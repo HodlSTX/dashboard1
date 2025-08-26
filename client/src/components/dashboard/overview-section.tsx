@@ -93,7 +93,7 @@ export function OverviewSection() {
         />
         <MetricCard
           title="Active Bounties"
-          value={data.bounties?.filter(b => b.status === 'active').length ?? "Loading..."}
+          value={Array.isArray(data.bounties) ? data.bounties.filter(b => b.status === 'active').length : "Loading..."}
           change="+8.2%"
           changeType="positive"
           icon={<Trophy className="text-za-cyan text-xl" />}

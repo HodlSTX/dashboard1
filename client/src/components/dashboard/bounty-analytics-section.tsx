@@ -53,10 +53,10 @@ export function BountyAnalyticsSection() {
   const bounties = data.bounties.length > 0 ? data.bounties : mockBounties;
 
   const filteredBounties = bounties.filter((bounty) => {
-    const matchesSearch = bounty.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bounty.organization.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (bounty.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (bounty.organization || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || 
-                           bounty.category.toLowerCase() === selectedCategory.toLowerCase();
+                           (bounty.category || "").toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -77,6 +77,9 @@ export function BountyAnalyticsSection() {
   };
 
   const getCategoryColor = (category: string) => {
+    if (!category || typeof category !== 'string') {
+      return 'bg-slate-500/20 text-slate-400';
+    }
     switch (category.toLowerCase()) {
       case 'development': return 'bg-za-purple/20 text-za-purple';
       case 'design': return 'bg-za-cyan/20 text-za-cyan';

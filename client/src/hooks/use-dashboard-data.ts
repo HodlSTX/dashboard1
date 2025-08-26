@@ -1,14 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { DashboardData, UserStats, BountyStats, GigStats, Bounty, Category, Organization } from "@/types/dashboard";
 
-const API_BASE_URL = "https://zeroauthoritydao.com/api";
+const API_BASE_URL = "/api/proxy";
 
 async function fetchUserStats(): Promise<UserStats> {
   const response = await fetch(`${API_BASE_URL}/users/stats`);
   if (!response.ok) {
     throw new Error("Failed to fetch user statistics");
   }
-  return response.json();
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.stats?.overview) {
+    return {
+      totalUsers: result.stats.overview.totalUsers || 0,
+      activeUsers: result.stats.overview.activeUsers || 0,
+      newUsers: result.stats.overview.newUsers || 0,
+      retentionRate: result.stats.overview.retentionRate || 0,
+      averageRating: result.stats.overview.averageRating || 0,
+    };
+  }
+  // Fallback if structure is different
+  return result;
 }
 
 async function fetchGigStats(): Promise<GigStats> {
@@ -16,7 +28,20 @@ async function fetchGigStats(): Promise<GigStats> {
   if (!response.ok) {
     throw new Error("Failed to fetch gig statistics");
   }
-  return response.json();
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.data?.overview) {
+    return {
+      totalGigs: result.data.overview.totalGigs || 0,
+      activeGigs: result.data.overview.activeGigs || 0,
+      completedGigs: result.data.overview.completedGigs || 0,
+      disputedGigs: result.data.overview.disputedGigs || 0,
+      totalValue: result.data.overview.totalValue || "0",
+      averageRating: result.data.overview.averageRating || 0,
+    };
+  }
+  // Fallback if structure is different
+  return result;
 }
 
 async function fetchBounties(): Promise<Bounty[]> {
@@ -24,7 +49,23 @@ async function fetchBounties(): Promise<Bounty[]> {
   if (!response.ok) {
     throw new Error("Failed to fetch bounties");
   }
-  return response.json();
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.data && Array.isArray(result.data)) {
+    return result.data.map((bounty: any) => ({
+      id: bounty.id || "",
+      title: bounty.title || "",
+      description: bounty.description || "",
+      category: typeof bounty.category === 'object' ? bounty.category?.name || "" : bounty.category || "",
+      organization: typeof bounty.organization === 'object' ? bounty.organization?.name || "" : bounty.organization || "",
+      value: bounty.value || bounty.price || "0",
+      status: bounty.status || "active",
+      dueDate: bounty.dueDate || bounty.deadline || new Date().toISOString(),
+      createdAt: bounty.createdAt || bounty.created_at || new Date().toISOString(),
+    }));
+  }
+  // Fallback to empty array
+  return [];
 }
 
 async function fetchCategories(): Promise<Category[]> {
@@ -32,7 +73,18 @@ async function fetchCategories(): Promise<Category[]> {
   if (!response.ok) {
     throw new Error("Failed to fetch categories");
   }
-  return response.json();
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.data && Array.isArray(result.data)) {
+    return result.data.map((category: any) => ({
+      id: category.id || "",
+      name: category.name || "",
+      description: category.description || "",
+      bountyCount: category.bountyCount || category.count || 0,
+    }));
+  }
+  // Fallback to empty array
+  return [];
 }
 
 async function fetchOrganizations(): Promise<Organization[]> {
@@ -40,7 +92,19 @@ async function fetchOrganizations(): Promise<Organization[]> {
   if (!response.ok) {
     throw new Error("Failed to fetch organizations");
   }
-  return response.json();
+  const result = await response.json();
+  // Handle the API response structure
+  if (result.data && Array.isArray(result.data)) {
+    return result.data.map((org: any) => ({
+      id: org.id || "",
+      name: org.name || "",
+      description: org.description || "",
+      bountyCount: org.bountyCount || org.count || 0,
+      totalValue: org.totalValue || org.total_value || "0",
+    }));
+  }
+  // Fallback to empty array
+  return [];
 }
 
 export function useUserStats() {
