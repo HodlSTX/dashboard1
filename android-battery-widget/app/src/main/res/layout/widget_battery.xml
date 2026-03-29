@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- Battery percentage big text -->
+    <TextView
+        android:id="@+id/tv_battery_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="---%"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal" />
+
+    <!-- Charging status -->
+    <TextView
+        android:id="@+id/tv_charging_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Checking..."
+        android:textColor="#B0BEC5"
+        android:textSize="13sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp" />
+
+    <!-- Progress bar -->
+    <ProgressBar
+        android:id="@+id/progress_battery"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_bar"
+        android:indeterminate="false" />
+
+    <!-- ETA details -->
+    <TextView
+        android:id="@+id/tv_eta_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Plug in to see charge ETAs"
+        android:textColor="#CFD8DC"
+        android:textSize="13sp"
+        android:lineSpacingExtra="4dp"
+        android:fontFamily="monospace" />
+
+</LinearLayout>
