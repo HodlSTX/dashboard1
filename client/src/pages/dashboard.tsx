@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { CurrencyBanner } from "@/components/dashboard/currency-banner";
 import { OverviewSection } from "@/components/dashboard/overview-section";
 import { UserStatsSection } from "@/components/dashboard/user-stats-section";
 import { BountyAnalyticsSection } from "@/components/dashboard/bounty-analytics-section";
@@ -43,7 +44,9 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-za-dark text-white font-inter">
       <Sidebar />
       
-      <main className="flex-1 ml-64 p-6 space-y-6">
+      <main className="flex-1 ml-64">
+        <CurrencyBanner />
+        <div className="p-6 space-y-6">
         {/* Header */}
         <header className="flex items-center justify-between" data-testid="dashboard-header">
           <div>
@@ -81,6 +84,7 @@ export default function Dashboard() {
         <UserStatsSection />
         <BountyAnalyticsSection />
         <OrganizationsSection />
+        </div>
       </main>
 
       {/* Loading State Modal */}
