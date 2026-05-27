@@ -2,9 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // API proxy routes for Zero Authority DAO API
-  // These routes can be used to proxy requests to avoid CORS issues
-  
+  // Zero Authority DAO API proxy routes — disabled while we ship the
+  // Android currency widget. Restore by un-commenting the block below.
+  /*
   app.get("/api/proxy/users/stats", async (req, res) => {
     try {
       const response = await fetch("https://zeroauthoritydao.com/api/users/stats");
@@ -15,7 +15,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       console.error("Error fetching user stats:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch user statistics",
         message: error instanceof Error ? error.message : "Unknown error"
       });
@@ -32,7 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       console.error("Error fetching users:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch users",
         message: error instanceof Error ? error.message : "Unknown error"
       });
@@ -49,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       console.error("Error fetching gig stats:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch gig statistics",
         message: error instanceof Error ? error.message : "Unknown error"
       });
@@ -58,26 +58,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/proxy/bounties", async (req, res) => {
     try {
-      // Try to get more bounties by using limit parameter
       const response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      
-      // If we get exactly 100 records, try to fetch more with pagination
+
       if (data.data && data.data.length === 100) {
         console.log("Got 100 bounties, attempting to fetch more with pagination...");
         try {
-          // Fetch page 2
           const page2Response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100&page=2");
           if (page2Response.ok) {
             const page2Data = await page2Response.json();
             if (page2Data.data && page2Data.data.length > 0) {
               data.data = [...data.data, ...page2Data.data];
               console.log(`Combined data after page 2: ${data.data.length} total bounties`);
-              
-              // If page 2 also has 100 records, try page 3
+
               if (page2Data.data.length === 100) {
                 try {
                   const page3Response = await fetch("https://zeroauthoritydao.com/api/bounties?limit=100&page=3");
@@ -98,11 +94,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("Pagination attempt failed, using single page result");
         }
       }
-      
+
       res.json(data);
     } catch (error) {
       console.error("Error fetching bounties:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch bounties",
         message: error instanceof Error ? error.message : "Unknown error"
       });
@@ -119,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch categories",
         message: error instanceof Error ? error.message : "Unknown error"
       });
@@ -136,12 +132,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       console.error("Error fetching organizations:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch organizations",
         message: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
+  */
 
   // USD -> BRL exchange rate (proxied to avoid CORS and centralize the source)
   app.get("/api/proxy/fx/usd-brl", async (_req, res) => {
